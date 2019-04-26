@@ -18,4 +18,13 @@
 但是同时另外一个线程B在线程A还未创造出实例之前，就又进行了singleton是否为null的判断，这时singleton依然为null，所以线程B也会进入if块去创造实例，
 这时问题就出来了，有两个线程都进入了if块去创造实例，结果就造成单例模式并非单例
  
- 为了避免这种情况，我们就要考虑并发的情况，最容易想到的就是加关键字：synchronized
+ 为了避免这种情况，我们就要考虑并发的情况，最容易想到的就是加关键字：synchronized。[代码地址](https://github.com/Huanglog/design-pattern/blob/master/singleton/src/main/java/com.singleton/SynchronizedSingleton.java)
+ 
+ 这样的做法很简单，就是将整个获取实例的方法同步，这样在一个线程访问此方法时，其他所有线程就挂起。显然这样的设计不符合我们的对代码的追求，
+ 表现出来的性能糟糕透了。
+ 
+ 其实我们同步的地方只需要发生在实例还未创建的时候，在实例创建后，我们就没必要再进行同步控制。可以使用一种更优雅的编码方式，
+ 也是大家看得最多的例子。**双重加锁**，即**Double Check Lock(DCL)**,[代码地址](https://github.com/Huanglog/design-pattern/blob/master/singleton/src/main/java/com.singleton/DCLSingleton.java)
+ 
+ 这种做法比上面的做法要好得多。因为我们只是在当前实例为null，也就是实例还未创建时同步，否则就直接返回已创建实例。
+ 
